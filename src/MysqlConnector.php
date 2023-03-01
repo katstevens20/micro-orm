@@ -30,6 +30,9 @@ class MysqlConnector implements DbConnectionInterface
         return $this->pdo->exec_params($query, $params);
     }
 
+    public function exec(string $query) {
+        return $this->pdo->exec($query);
+    }
     public function query(string $query) {
         return $this->pdo->query($query);
     }
