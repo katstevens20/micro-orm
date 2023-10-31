@@ -58,6 +58,6 @@ class PdoLink extends \PDO {
 			$result = $stm->errorInfo();
 		}
 		return $result; 
-	} 
+	}
 	
 }
