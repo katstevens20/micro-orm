@@ -75,4 +75,17 @@ class MysqlConnector implements DbConnectionInterface
         $stmt->execute($params);
         return $stmt->rowCount();
     }
+    /**
+     * Return count
+     *
+     * @param $sql
+     * @param $params
+     * @return mixed
+     */
+    public function executeAndReturnOne($sql, $params) {
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        $resultArray = $stmt->fetchAll();
+        return $resultArray?$resultArray[0]:$resultArray;
+    }
 }
