@@ -59,7 +59,7 @@ class MysqlConnector implements DbConnectionInterface
      * @param $params
      * @return mixed
      */
-    public function executeAndReturnRows($sql, $params) {
+    public function executeAndReturnRows($sql, $params = []) {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();
@@ -69,10 +69,10 @@ class MysqlConnector implements DbConnectionInterface
      * Return count
      *
      * @param $sql
-     * @param $params
+     * @param array $params
      * @return mixed
      */
-    public function executeAndReturnCount($sql, $params = []) {
+    public function executeAndReturnCount($sql, array $params = []) {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->rowCount();
@@ -81,10 +81,10 @@ class MysqlConnector implements DbConnectionInterface
      * Return count
      *
      * @param $sql
-     * @param $params
+     * @param array $params
      * @return mixed
      */
-    public function executeAndReturnOne($sql, $params = []) {
+    public function executeAndReturnOne($sql, array $params = []) {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         $resultArray = $stmt->fetchAll();
@@ -95,10 +95,10 @@ class MysqlConnector implements DbConnectionInterface
      * Execute insert or update sql
      *
      * @param $sql
-     * @param $params
-     * @return void
+     * @param array $params
+     * @return bool
      */
-    function executeInsertOrUpdate( $sql, $params = []) {
+    function executeInsertOrUpdate($sql, array $params = []) {
         $stmt = $this->pdo->prepare($sql);
 
         foreach ($params as $param => $value) {
