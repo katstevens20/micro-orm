@@ -115,11 +115,6 @@ class MysqlConnector implements DbConnectionInterface
             $stmt->bindValue($param, $value, $paramType);
         }
 
-        $result = $stmt->execute();
-
-        if (!$result) {
-            throw new Exception("Error: " . $stmt->errorInfo()[2]);
-        }
-        return $result;
+        return $stmt->execute();
     }
 }
