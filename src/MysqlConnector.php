@@ -1,6 +1,8 @@
 <?php
 
 namespace Kat\MicroORM;
+use PDO;
+use Exception;
 
 class MysqlConnector implements DbConnectionInterface
 {
