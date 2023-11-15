@@ -70,7 +70,7 @@ class MysqlConnector implements DbConnectionInterface
      * @param $params
      * @return mixed
      */
-    public function executeAndReturnCount($sql, $params) {
+    public function executeAndReturnCount($sql, $params = []) {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->rowCount();
@@ -82,10 +82,42 @@ class MysqlConnector implements DbConnectionInterface
      * @param $params
      * @return mixed
      */
-    public function executeAndReturnOne($sql, $params) {
+    public function executeAndReturnOne($sql, $params = []) {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         $resultArray = $stmt->fetchAll();
         return $resultArray?$resultArray[0]:$resultArray;
+    }
+
+    /**
+     * Execute insert or update sql
+     *
+     * @param $sql
+     * @param $params
+     * @return void
+     */
+    function executeInsertOrUpdate( $sql, $params = []) {
+        $stmt = $this->pdo->prepare($sql);
+
+        foreach ($params as $param => $value) {
+            $paramType = PDO::PARAM_STR;
+
+            if (is_int($value)) {
+                $paramType = PDO::PARAM_INT;
+            } elseif (is_bool($value)) {
+                $paramType = PDO::PARAM_BOOL;
+            } elseif (is_null($value)) {
+                $paramType = PDO::PARAM_NULL;
+            }
+
+            $stmt->bindValue($param, $value, $paramType);
+        }
+
+        $result = $stmt->execute();
+
+        if (!$result) {
+            throw new Exception("Error: " . $stmt->errorInfo()[2]);
+        }
+        return $result;
     }
 }
