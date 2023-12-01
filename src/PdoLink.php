@@ -48,6 +48,9 @@ class PdoLink extends PDO
         return $nb_row;
     }
 
+    /**
+     * @throws Exception
+     */
     function exec_params($sql, $params)
     {
         $stm = $this->prepare($sql);
