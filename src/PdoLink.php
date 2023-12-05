@@ -16,12 +16,13 @@ use Exception;
 class PdoLink extends PDO
 {
     /**
-     * @brief Execute un SELECT sur une base MYSQL est retourne le nombre de résultat et un tableau contenant ceci.
+     * @brief Execute un SELECT sur une base MYSQL est retourné le nombre de résultats et un tableau contenant ceci.
      *
      * @param string $query la requête MYSQL a exécuter
-     * @param string $index nom de la colonne a utiliser comme index pour $tab_resultat
+     * @param string $index nom de la colonne à utiliser comme index pour $tab_resultat
      * @param mixed $tab_resultat tableau dans lequel le résultat de la requete doit être stocké
-     * @return le nombre de résultat du SELECT.
+     * @return le nombre de résultats du SELECT.
+     * @throws Exception
      */
     function executer_select($query, $index = '', &$tab_resultat)
     {

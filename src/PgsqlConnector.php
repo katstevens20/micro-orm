@@ -30,4 +30,25 @@ class PgsqlConnector implements DbConnectionInterface
     {
         return $this->pdo->exec_params($query, $params);
     }
+
+    public function beginTransaction()
+    {
+        return $this->pdo->beginTransaction();
+    }
+
+    public function commit()
+    {
+        return $this->pdo->commit();
+    }
+
+    public function rollBack()
+    {
+        return $this->pdo->rollBack();
+    }
+
+    public function exec($query)
+    {
+        return $this->pdo->exec($query);
+    }
+
 }
