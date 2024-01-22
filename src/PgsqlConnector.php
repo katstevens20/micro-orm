@@ -79,7 +79,7 @@ class PgsqlConnector implements DbConnectionInterface
     }
     /**
      * Return count
-     *
+
      * @param $sql
      * @param array $params
      * @return mixed
