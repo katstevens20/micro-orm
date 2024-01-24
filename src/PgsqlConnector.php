@@ -2,6 +2,8 @@
 
 namespace Kat\MicroORM;
 
+use PDO;
+use Exception;
 
 class PgsqlConnector implements DbConnectionInterface
 {
@@ -59,7 +61,8 @@ class PgsqlConnector implements DbConnectionInterface
      * @param $params
      * @return mixed
      */
-    public function executeAndReturnRows($sql, $params = []) {
+    public function executeAndReturnRows($sql, $params = [])
+    {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();
@@ -72,23 +75,25 @@ class PgsqlConnector implements DbConnectionInterface
      * @param array $params
      * @return mixed
      */
-    public function executeAndReturnCount($sql, array $params = []) {
+    public function executeAndReturnCount($sql, array $params = [])
+    {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->rowCount();
     }
+
     /**
      * Return count
-
      * @param $sql
      * @param array $params
      * @return mixed
      */
-    public function executeAndReturnOne($sql, array $params = []) {
+    public function executeAndReturnOne($sql, array $params = [])
+    {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         $resultArray = $stmt->fetchAll();
-        return $resultArray?$resultArray[0]:$resultArray;
+        return $resultArray ? $resultArray[0] : $resultArray;
     }
 
     /**
@@ -98,7 +103,8 @@ class PgsqlConnector implements DbConnectionInterface
      * @param array $params
      * @return bool
      */
-    function executeInsertOrUpdate($sql, array $params = []) {
+    function executeInsertOrUpdate($sql, array $params = [])
+    {
         $stmt = $this->pdo->prepare($sql);
 
         foreach ($params as $param => $value) {
