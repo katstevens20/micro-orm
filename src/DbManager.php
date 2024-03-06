@@ -5,17 +5,20 @@ namespace Kat\MicroORM;
 use Kat\MicroORM\Exceptions\DriverNotFoundException;
 use Kat\MicroORM\Exceptions\InvalidConnectionNameException;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class DbManager implements DbManagerInterface
 {
     protected DbConnectionFactory $dbConnectionFactory;
     private LoggerInterface $logger;
+    private LoggerInterface $isLogActive;
 
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, bool $isLogActive = false)
     {
         $this->logger = $logger;
         $this->dbConnectionFactory = new DbConnectionFactory();
+        $this->isLogActive = $isLogActive;
     }
 
     /**
@@ -26,10 +29,12 @@ class DbManager implements DbManagerInterface
      */
     public function addConnection(string $name, array $config): void
     {
-        $this->logger->info("Connect to {$config['driver']} => {$config['db']} ");
+        if($this->isLogActive) {
+            $this->logger->info("Connect to {$config['driver']} => {$config['db']} ");
+        }
         try {
             $this->dbConnectionFactory->makeConnection($name, $config);
-        } catch (Exception | DriverNotFoundException $e) {
+        } catch (Throwable $e) {
             $this->logger->error($e->getMessage() . "\n" . $e->getTraceAsString());
         }
     }
