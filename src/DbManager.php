@@ -11,7 +11,7 @@ class DbManager implements DbManagerInterface
 {
     protected DbConnectionFactory $dbConnectionFactory;
     private LoggerInterface $logger;
-    private LoggerInterface $isLogActive;
+    private bool $isLogActive;
 
 
     public function __construct(LoggerInterface $logger, bool $isLogActive = false)
