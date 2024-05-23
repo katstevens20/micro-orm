@@ -3,7 +3,6 @@
 namespace Kat\MicroORM;
 
 use PDO;
-use Exception;
 
 class PgsqlConnector implements DbConnectionInterface
 {
@@ -20,7 +19,10 @@ class PgsqlConnector implements DbConnectionInterface
 
     public function connect()
     {
-        $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password']);
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        ];
+        $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password'], $options);
     }
 
     public function executer_select($query, $index, &$result)
