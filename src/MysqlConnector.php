@@ -2,12 +2,19 @@
 
 namespace Kat\MicroORM;
 use PDO;
-use Exception;
 
 class MysqlConnector implements DbConnectionInterface
 {
     protected array $config;
     protected PdoLink $pdo;
+    protected int $fetchMode = PDO::FETCH_DEFAULT;
+
+
+    public function setFetchMode(int $fetchMode): MysqlConnector
+    {
+        $this->fetchMode = $fetchMode;
+        return $this;
+    }
 
 
     public function __construct(array $config)
@@ -62,7 +69,7 @@ class MysqlConnector implements DbConnectionInterface
     public function executeAndReturnRows($sql, $params = []) {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetchAll();
+        return $stmt->fetchAll($this->fetchMode);
     }
 
     /**
@@ -87,7 +94,7 @@ class MysqlConnector implements DbConnectionInterface
     public function executeAndReturnOne($sql, array $params = []) {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
-        $resultArray = $stmt->fetchAll();
+        $resultArray = $stmt->fetchAll($this->fetchMode);
         return $resultArray?$resultArray[0]:$resultArray;
     }
 
