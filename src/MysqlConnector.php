@@ -1,7 +1,9 @@
 <?php
 
 namespace Kat\MicroORM;
+
 use PDO;
+use Throwable;
 
 class MysqlConnector implements DbConnectionInterface
 {
@@ -24,9 +26,29 @@ class MysqlConnector implements DbConnectionInterface
     }
 
 
+    /**
+     * @throws \Exception
+     */
     public function connect()
     {
-        $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password']);
+        $delayMultiplier = isset($this->config['delaymultiplier']) && is_numeric($this->config['delaymultiplier']) ? $this->config['delaymultiplier'] : 2;
+        $delay = isset($this->config['delay']) && is_numeric($this->config['delay']) ? $this->config['delay'] : 2;// Initial delay in seconds
+        $retryCount = 0;
+        $maxRetries = isset($this->config['retry']) && is_numeric($this->config['retry']) ? $this->config['retry'] : 1;
+        while ($retryCount < $maxRetries) {
+            try {
+                $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password']);
+            } catch (throwable $e) {
+                $retryCount++;
+                if ($retryCount >= $maxRetries) {
+                    throw new \Exception("Maximum number of retries exceeded:" . $e->getMessage());
+                }
+                sleep($delay);
+                $delay *= $delayMultiplier;
+            }
+        }
+
+
     }
 
     public function executer_select($query, $index, &$result)
@@ -34,27 +56,33 @@ class MysqlConnector implements DbConnectionInterface
         return $this->pdo->executer_select($query, $index, $result);
     }
 
-    public function exec_params($query, $params=[])
+    public function exec_params($query, $params = [])
     {
         return $this->pdo->exec_params($query, $params);
     }
 
-    public function exec(string $query) {
+    public function exec(string $query)
+    {
         return $this->pdo->exec($query);
     }
-    public function query(string $query) {
+
+    public function query(string $query)
+    {
         return $this->pdo->query($query);
     }
 
-    public function beginTransaction() {
+    public function beginTransaction()
+    {
         return $this->pdo->beginTransaction();
     }
 
-    public function rollBack() {
+    public function rollBack()
+    {
         return $this->pdo->rollBack();
     }
 
-    public function commit() {
+    public function commit()
+    {
         return $this->pdo->commit();
     }
 
@@ -66,7 +94,8 @@ class MysqlConnector implements DbConnectionInterface
      * @param $params
      * @return mixed
      */
-    public function executeAndReturnRows($sql, $params = []) {
+    public function executeAndReturnRows($sql, $params = [])
+    {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll($this->fetchMode);
@@ -79,11 +108,13 @@ class MysqlConnector implements DbConnectionInterface
      * @param array $params
      * @return mixed
      */
-    public function executeAndReturnCount($sql, array $params = []) {
+    public function executeAndReturnCount($sql, array $params = [])
+    {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->rowCount();
     }
+
     /**
      * Return count
      *
@@ -91,11 +122,12 @@ class MysqlConnector implements DbConnectionInterface
      * @param array $params
      * @return mixed
      */
-    public function executeAndReturnOne($sql, array $params = []) {
+    public function executeAndReturnOne($sql, array $params = [])
+    {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         $resultArray = $stmt->fetchAll($this->fetchMode);
-        return $resultArray?$resultArray[0]:$resultArray;
+        return $resultArray ? $resultArray[0] : $resultArray;
     }
 
     /**
@@ -105,7 +137,8 @@ class MysqlConnector implements DbConnectionInterface
      * @param array $params
      * @return bool
      */
-    function executeInsertOrUpdate($sql, array $params = []) {
+    function executeInsertOrUpdate($sql, array $params = [])
+    {
         $stmt = $this->pdo->prepare($sql);
 
         foreach ($params as $param => $value) {
