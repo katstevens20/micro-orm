@@ -8,7 +8,7 @@ use Throwable;
 class MysqlConnector implements DbConnectionInterface
 {
     protected array $config;
-    protected PdoLink $pdo;
+    protected ?PdoLink $pdo = null;
     protected int $fetchMode = PDO::FETCH_DEFAULT;
 
 
@@ -35,7 +35,7 @@ class MysqlConnector implements DbConnectionInterface
         $delay = isset($this->config['delay']) && is_numeric($this->config['delay']) ? $this->config['delay'] : 2;// Initial delay in seconds
         $retryCount = 0;
         $maxRetries = isset($this->config['retry']) && is_numeric($this->config['retry']) ? $this->config['retry'] : 1;
-        while ($retryCount < $maxRetries) {
+        while ($retryCount < $maxRetries && !$this->pdo) {
             try {
                 $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password']);
             } catch (throwable $e) {
