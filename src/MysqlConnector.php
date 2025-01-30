@@ -3,6 +3,7 @@
 namespace Kat\MicroORM;
 
 use PDO;
+use Psr\Log\LoggerInterface;
 use Throwable;
 
 class MysqlConnector implements DbConnectionInterface
@@ -10,6 +11,7 @@ class MysqlConnector implements DbConnectionInterface
     protected array $config;
     protected ?PdoLink $pdo = null;
     protected int $fetchMode = PDO::FETCH_DEFAULT;
+    protected ?LoggerInterface $logger = null;
 
 
     public function setFetchMode(int $fetchMode): MysqlConnector
@@ -18,6 +20,12 @@ class MysqlConnector implements DbConnectionInterface
         return $this;
     }
 
+    //setter for logger interface
+    public function setLogger(LoggerInterface $logger): MysqlConnector
+    {
+        $this->logger = $logger;
+        return $this;
+    }
 
     public function __construct(array $config)
     {
@@ -96,6 +104,10 @@ class MysqlConnector implements DbConnectionInterface
      */
     public function executeAndReturnRows($sql, $params = [])
     {
+        //print ŝql for debug with params if there is any
+        if ($this->logger) {
+            $this->logger->debug($sql, $params);
+        }
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll($this->fetchMode);
@@ -110,6 +122,9 @@ class MysqlConnector implements DbConnectionInterface
      */
     public function executeAndReturnCount($sql, array $params = [])
     {
+        if ($this->logger) {
+            $this->logger->debug($sql, $params);
+        }
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt->rowCount();
@@ -124,6 +139,9 @@ class MysqlConnector implements DbConnectionInterface
      */
     public function executeAndReturnOne($sql, array $params = [])
     {
+        if ($this->logger) {
+            $this->logger->debug($sql, $params);
+        }
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         $resultArray = $stmt->fetchAll($this->fetchMode);
@@ -139,6 +157,9 @@ class MysqlConnector implements DbConnectionInterface
      */
     function executeInsertOrUpdate($sql, array $params = [])
     {
+        if ($this->logger) {
+            $this->logger->debug($sql, $params);
+        }
         $stmt = $this->pdo->prepare($sql);
 
         foreach ($params as $param => $value) {
