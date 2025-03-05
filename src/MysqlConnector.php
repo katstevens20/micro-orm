@@ -33,6 +33,14 @@ class MysqlConnector implements DbConnectionInterface
         $this->connect();
     }
 
+    /**
+     * Close pdo connection
+     */
+    public function close(): void
+    {
+        $this->pdo = null;
+    }
+
 
     /**
      * @throws \Exception

@@ -25,6 +25,14 @@ class PgsqlConnector implements DbConnectionInterface
         $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password'], $options);
     }
 
+    /**
+     * Pgsql close connection
+     */
+    public function close()
+    {
+        $this->pdo = null;
+    }
+
     public function executer_select($query, $index, &$result)
     {
         return $this->pdo->executer_select($query, $index, $result);
