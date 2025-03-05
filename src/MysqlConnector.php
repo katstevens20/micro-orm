@@ -4,7 +4,6 @@ namespace Kat\MicroORM;
 
 use PDO;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 class MysqlConnector implements DbConnectionInterface
 {
@@ -56,24 +55,7 @@ class MysqlConnector implements DbConnectionInterface
      */
     public function connect()
     {
-        $delayMultiplier = isset($this->config['delaymultiplier']) && is_numeric($this->config['delaymultiplier']) ? $this->config['delaymultiplier'] : 2;
-        $delay = isset($this->config['delay']) && is_numeric($this->config['delay']) ? $this->config['delay'] : 2;// Initial delay in seconds
-        $retryCount = 0;
-        $maxRetries = isset($this->config['retry']) && is_numeric($this->config['retry']) ? $this->config['retry'] : 1;
-        while ($retryCount < $maxRetries && !$this->pdo) {
-            try {
-                $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password'], [PDO::ATTR_TIMEOUT => $this->timeout]);
-            } catch (throwable $e) {
-                $retryCount++;
-                if ($retryCount >= $maxRetries) {
-                    throw new \Exception("Maximum number of retries exceeded:" . $e->getMessage());
-                }
-                sleep($delay);
-                $delay *= $delayMultiplier;
-            }
-        }
-
-
+        $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password'], [PDO::ATTR_TIMEOUT => $this->timeout]);
     }
 
     public function executer_select($query, $index, &$result)
