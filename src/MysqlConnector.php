@@ -13,7 +13,7 @@ class MysqlConnector implements DbConnectionInterface
     protected int $fetchMode = 0;//PDO::FETCH_DEFAULT for > php8.0
     protected ?LoggerInterface $logger = null;
 
-    protected $timeout = 0;//timeout in seconds
+    protected $timeout = 30;//timeout in seconds
 
     /**
      * setter for timeout
@@ -62,7 +62,7 @@ class MysqlConnector implements DbConnectionInterface
         $maxRetries = isset($this->config['retry']) && is_numeric($this->config['retry']) ? $this->config['retry'] : 1;
         while ($retryCount < $maxRetries && !$this->pdo) {
             try {
-                $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password'], [PDO::ATTR_TIMEOUT => $this->timeout, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => $this->timeout]);
+                $this->pdo = new PdoLink($this->config['driver'] . ':host=' . $this->config['host'] . ';dbname=' . $this->config['db'], $this->config['user'], $this->config['password'], [PDO::ATTR_TIMEOUT => $this->timeout]);
             } catch (throwable $e) {
                 $retryCount++;
                 if ($retryCount >= $maxRetries) {
